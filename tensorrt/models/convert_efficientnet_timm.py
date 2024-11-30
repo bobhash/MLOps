@@ -13,9 +13,9 @@ def main():
     torch.onnx.export(
         model,
         dummy_input,
-        "efficientnet_b0.onnx",
+        "models/efficientnet_b0.onnx",
         export_params=True,
-        opset_version=10,
+        opset_version=19,
         do_constant_folding=True,
         input_names=["IMAGES"],
         output_names=["CLASS_PROBS"],
@@ -26,7 +26,7 @@ def main():
     ort_inputs = {
         "IMAGES": dummy_input.numpy(),
     }
-    ort_session = ort.InferenceSession("efficientnet_b0.onnx")
+    ort_session = ort.InferenceSession("models/efficientnet_b0.onnx")
     onnx_embeddings = ort_session.run(None, ort_inputs)[0]
 
     assert np.allclose(original_embeddings, onnx_embeddings, atol=1e-5)

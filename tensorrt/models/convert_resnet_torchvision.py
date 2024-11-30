@@ -13,7 +13,7 @@ def main():
     torch.onnx.export(
         model,
         dummy_input,
-        "resnet50.onnx",
+        "models/resnet50.onnx",
         export_params=True,
         opset_version=15,
         do_constant_folding=True,
@@ -26,7 +26,7 @@ def main():
     ort_inputs = {
         "IMAGES": dummy_input.numpy(),
     }
-    ort_session = ort.InferenceSession("resnet50.onnx")
+    ort_session = ort.InferenceSession("models/resnet50.onnx")
     onnx_embeddings = ort_session.run(None, ort_inputs)[0]
 
     assert np.allclose(original_embeddings, onnx_embeddings, atol=1e-5)

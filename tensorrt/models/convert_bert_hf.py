@@ -54,9 +54,9 @@ def main():
     torch.onnx.export(
         model,
         (tokens_tensor, att_mask_tensor),
-        "bert_base_uncased_embedder.onnx",
+        "models/bert_base_uncased_embedder.onnx",
         export_params=True,
-        opset_version=15,
+        opset_version=19,
         input_names=["INPUT_IDS", "ATTENTION_MASK"],
         output_names=["EMBEDDINGS"],
         dynamic_axes={
@@ -71,7 +71,7 @@ def main():
         "INPUT_IDS": tokens_tensor.numpy(),
         "ATTENTION_MASK": att_mask_tensor.numpy(),
     }
-    ort_session = ort.InferenceSession("bert_base_uncased_embedder.onnx")
+    ort_session = ort.InferenceSession("models/bert_base_uncased_embedder.onnx")
     onnx_embeddings = ort_session.run(None, ort_inputs)[0]
 
     assert np.allclose(original_embeddings, onnx_embeddings, atol=1e-5)

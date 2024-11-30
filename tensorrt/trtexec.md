@@ -61,27 +61,14 @@ docker run -it --rm --gpus '"device=2"' -v ./models:/models nvcr.io/nvidia/tenso
 
 
 ```bash
-# FP32
 trtexec --onnx=/models/resnet50.onnx \
---saveEngine=/models/resnet50_FP32_AMPERE+.plan \
---minShapes=IMAGES:1x3x224x224 \
---optShapes=IMAGES:8x3x224x224 \
---maxShapes=IMAGES:16x3x224x224 \
---inputIOFormats=fp32:chw \
---profilingVerbosity=detailed \
---builderOptimizationLevel=5 \
---hardwareCompatibilityLevel=ampere+
-
-# FP16
-trtexec --onnx=/models/resnet50.onnx \
---saveEngine=/models/resnet50_FP16_AMPERE+.plan \
+--saveEngine=/models/resnet50_FP16.plan \
 --minShapes=IMAGES:1x3x224x224 \
 --optShapes=IMAGES:8x3x224x224 \
 --maxShapes=IMAGES:16x3x224x224 \
 --inputIOFormats=fp32:chw \
 --fp16 \
 --profilingVerbosity=detailed \
---builderOptimizationLevel=5 \
---hardwareCompatibilityLevel=ampere+
+--builderOptimizationLevel=5
 ```
 
