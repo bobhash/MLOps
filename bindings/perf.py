@@ -52,6 +52,16 @@ def compare(matrix_size: int) -> None:
         )
     )
     print(
+        "Mat mul (Pure C++ NDArray), size={0}x{0}: {1} seconds".format(
+            matrix_size, test_timings(linalg.LinearAlgebra.matmulPureNDArray, matrix_a, matrix_b)
+        )
+    )
+    print(
+        "Mat mul (C++ BLAS NDArray), size={0}x{0}: {1} seconds".format(
+            matrix_size, test_timings(linalg.LinearAlgebra.matmulBlasNDArray, matrix_a, matrix_b)
+        )
+    )
+    print(
         "Mat mul (Python numpy), size={0}x{0}: {1} seconds\n".format(
             matrix_size, test_timings(np.dot, np.array(list_a), np.array(list_b))
         )
