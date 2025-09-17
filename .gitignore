@@ -35,3 +35,5 @@ lightning/demo-feedback-prize/after/outputs/
 lightning/demo-feedback-prize/after/wandb/
 lightning/demo-feedback-prize/before/outputs
 ANN/oos-eval
+*.cbm
+catboost_info/
