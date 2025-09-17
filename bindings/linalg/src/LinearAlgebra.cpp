@@ -2,6 +2,104 @@
 #include <cblas.h>
 #include <iostream>
 #include <vector>
+#include <pybind11/numpy.h>
+
+namespace py = pybind11;
+
+double LinearAlgebra::dotPureNDArray(py::array_t<double> a,
+                                     py::array_t<double> b) {
+  py::buffer_info buf_a = a.request(), buf_b = b.request();
+  if (buf_a.ndim != 1 || buf_b.ndim != 1)
+    throw std::runtime_error("dotPureNDArray expects 1D arrays");
+  if (buf_a.shape[0] != buf_b.shape[0])
+    throw std::runtime_error("Vectors must be the same size");
+
+  auto *ptr_a = static_cast<double *>(buf_a.ptr);
+  auto *ptr_b = static_cast<double *>(buf_b.ptr);
+
+  double result = 0.0;
+  for (ssize_t i = 0; i < buf_a.shape[0]; ++i) {
+    result += ptr_a[i] * ptr_b[i];
+  }
+  return result;
+}
+
+double LinearAlgebra::dotBlasNDArray(py::array_t<double> a,
+                                     py::array_t<double> b) {
+  py::buffer_info buf_a = a.request(), buf_b = b.request();
+  if (buf_a.ndim != 1 || buf_b.ndim != 1)
+    throw std::runtime_error("dotBlasNDArray expects 1D arrays");
+  if (buf_a.shape[0] != buf_b.shape[0])
+    throw std::runtime_error("Vectors must be the same size");
+
+  auto *ptr_a = static_cast<double *>(buf_a.ptr);
+  auto *ptr_b = static_cast<double *>(buf_b.ptr);
+
+  return cblas_ddot(buf_a.shape[0], ptr_a, 1, ptr_b, 1);
+}
+
+py::array_t<double> LinearAlgebra::matmulPureNDArray(py::array_t<double> a,
+                                                     py::array_t<double> b) {
+  py::buffer_info buf_a = a.request(), buf_b = b.request();
+  if (buf_a.ndim != 2 || buf_b.ndim != 2)
+    throw std::runtime_error("matmulPureNDArray expects 2D arrays");
+
+  ssize_t aRows = buf_a.shape[0];
+  ssize_t aCols = buf_a.shape[1];
+  ssize_t bRows = buf_b.shape[0];
+  ssize_t bCols = buf_b.shape[1];
+
+  if (aCols != bRows)
+    throw std::runtime_error("Matrix dimensions do not align");
+
+  auto result = py::array_t<double>({aRows, bCols});
+  py::buffer_info buf_res = result.request();
+
+  auto *A = static_cast<double *>(buf_a.ptr);
+  auto *B = static_cast<double *>(buf_b.ptr);
+  auto *C = static_cast<double *>(buf_res.ptr);
+
+  for (ssize_t i = 0; i < aRows; ++i) {
+    for (ssize_t j = 0; j < bCols; ++j) {
+      double sum = 0.0;
+      for (ssize_t k = 0; k < aCols; ++k) {
+        sum += A[i * aCols + k] * B[k * bCols + j];
+      }
+      C[i * bCols + j] = sum;
+    }
+  }
+
+  return result;
+}
+
+py::array_t<double> LinearAlgebra::matmulBlasNDArray(py::array_t<double> a,
+                                                     py::array_t<double> b) {
+  py::buffer_info buf_a = a.request(), buf_b = b.request();
+  if (buf_a.ndim != 2 || buf_b.ndim != 2)
+    throw std::runtime_error("matmulBlasNDArray expects 2D arrays");
+
+  ssize_t aRows = buf_a.shape[0];
+  ssize_t aCols = buf_a.shape[1];
+  ssize_t bRows = buf_b.shape[0];
+  ssize_t bCols = buf_b.shape[1];
+
+  if (aCols != bRows)
+    throw std::runtime_error("Matrix dimensions do not align");
+
+  auto result = py::array_t<double>({aRows, bCols});
+  py::buffer_info buf_res = result.request();
+
+  auto *A = static_cast<double *>(buf_a.ptr);
+  auto *B = static_cast<double *>(buf_b.ptr);
+  auto *C = static_cast<double *>(buf_res.ptr);
+
+  cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
+              aRows, bCols, aCols,
+              1.0, A, aCols, B, bCols,
+              0.0, C, bCols);
+
+  return result;
+}
 
 double LinearAlgebra::dotPure(const std::vector<double> &a,
                               const std::vector<double> &b) {
