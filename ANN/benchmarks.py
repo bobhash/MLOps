@@ -119,20 +119,11 @@ def main():
         cluster_settings=[0, 8, 16, 64, 128],
         test_size=0.2,
         emb_column=emb_column,
-        use_gpu=True,
+        use_gpu=False,
     )
 
     synthetic_data_path = "./xlm-roberta-synthetic-embeddings.parquet"
-    run_performance_tests(
-        synthetic_data_path,
-        [0],
-        [100],
-        use_gpu=False,
-        emb_column=emb_column,
-        test_size=0.1,
-    )
-
-    clusters_perf = [0, 8, 16, 32, 64, 128, 512, 1024, 4096, 8192, 16384]
+    clusters_perf = [0, 8, 16, 32, 64, 128]
     test_size_limits = [
         1000,
         100,
@@ -150,7 +141,7 @@ def main():
         synthetic_data_path,
         clusters_perf,
         test_size_limits,
-        use_gpu=True,
+        use_gpu=False,
         emb_column=emb_column,
         test_size=0.1,
     )

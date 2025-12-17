@@ -11,7 +11,7 @@ conda env create -f environment.yml -n ann
 python prepare_embeddings.py
 
 # Run benchmarks
-python benchmarks.py
+python benchmarks.py --emb-column ...
 ```
 
 Подробнее почитать про бенчмарки других ANN можно [тут](https://github.com/erikbern/ann-benchmarks).
