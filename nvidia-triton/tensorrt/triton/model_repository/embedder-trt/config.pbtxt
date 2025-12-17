@@ -1,0 +1,39 @@
+name: "embedder-trt"
+platform: "tensorrt_plan"
+max_batch_size: 4
+
+
+input [
+    {
+        name: "IMAGES"
+        data_type: TYPE_FP32
+        dims: [ 3, 256, 256 ]
+    }
+]
+
+output [
+    {
+        name: "EMBEDDINGS"
+        data_type: TYPE_FP16
+        dims: [ 768 ]
+    }
+]
+
+
+cc_model_filenames [
+    {
+        key: "8.0"
+        value: "siglip2-base-patch32-256.fp16-autocast.plan"
+    }
+]
+
+
+instance_group [
+    {
+        count: 1
+        kind: KIND_GPU
+        gpus: [0]
+    }
+]
+
+dynamic_batching { }

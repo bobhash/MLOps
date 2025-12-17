@@ -1,0 +1,65 @@
+name: "ensemble-embedders"
+platform: "ensemble"
+
+
+input [
+    {
+        name: "IMAGE_B64"
+        data_type: TYPE_STRING
+        dims: [ 1 ]
+    }
+]
+
+output [
+    {
+        name: "EMBEDDING_ONNX"
+        data_type: TYPE_FP16
+        dims: [ 1, 768 ]
+    },
+    {
+        name: "EMBEDDING_TRT"
+        data_type: TYPE_FP16
+        dims: [ 1, 768 ]
+    }
+]
+
+ensemble_scheduling {
+    step [
+        {
+            model_name: "image-processor"
+            model_version: -1
+            input_map {
+                key: "IMAGE_B64"
+                value: "IMAGE_B64"
+            }
+            output_map {
+                key: "PREPROCESSED_IMAGE"
+                value: "PREPROCESSED_IMAGE"
+            }
+        },
+        {
+            model_name: "embedder-onnx"
+            model_version: -1
+            input_map {
+                key: "IMAGES"
+                value: "PREPROCESSED_IMAGE"
+            }
+            output_map {
+                key: "EMBEDDINGS"
+                value: "EMBEDDING_ONNX"
+            }
+        },
+        {
+            model_name: "embedder-trt"
+            model_version: -1
+            input_map {
+                key: "IMAGES"
+                value: "PREPROCESSED_IMAGE"
+            }
+            output_map {
+                key: "EMBEDDINGS"
+                value: "EMBEDDING_TRT"
+            }
+        }
+    ]
+}

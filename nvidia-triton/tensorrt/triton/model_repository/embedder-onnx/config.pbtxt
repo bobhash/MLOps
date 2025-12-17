@@ -1,0 +1,31 @@
+name: "embedder-onnx"
+platform: "onnxruntime_onnx"
+max_batch_size: 4
+
+
+input [
+    {
+        name: "IMAGES"
+        data_type: TYPE_FP32
+        dims: [ 3, 256, 256 ]
+    }
+]
+
+output [
+    {
+        name: "EMBEDDINGS"
+        data_type: TYPE_FP16
+        dims: [ 768 ]
+    }
+]
+
+
+instance_group [
+    {
+        count: 1
+        kind: KIND_GPU
+        gpus: [0]
+    }
+]
+
+dynamic_batching { }

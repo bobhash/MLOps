@@ -1,0 +1,11 @@
+.old
+sample-images
+calib-images
+siglip2-base-patch32-256
+*.ONNX
+*.plan
+*.npz
+*.json
+autocast-log.txt
+quantize-log.txt
+trt-log.txt
